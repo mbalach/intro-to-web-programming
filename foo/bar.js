@@ -21,7 +21,7 @@ function addTextFunc() {
 
   addButton.addEventListener("click", function () {
     let newItem = document.createElement("li");
-    newItem.innerText = ++itemCounter + " - " + document.getElementById("message").value;
+    newItem.innerText = document.getElementById("message").value;
     myList.appendChild(newItem);
   });
 
