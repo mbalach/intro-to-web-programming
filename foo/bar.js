@@ -15,7 +15,7 @@ function printButtonFunc() {
 
 function addTextFunc() {
 
-  const addButton = document.getElementById("add-button");
+  const addButton = document.getElementById("add-data");
   const myList = document.getElementById("my-list");
   let itemCounter = 0;
 
