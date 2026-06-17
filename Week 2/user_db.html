@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <script src="user_db_be.js"></script>
+  <title>User Database Handler</title>
 </head>
 <body>
 
@@ -22,6 +23,20 @@
         <tr><td>hotPotato67</td><td>hotPotato67@yahoo.com</td><td>-</td></tr>
       </tbody>
     </table>
+
+    <form> 
+      <label for="userName"> Username: </label><br>
+      <input type="text" id="input-username" name="userName"><br>
+      <label for="useremail"> Email Address: </label><br>
+      <input type="text" id="input-email" name="userEmail"><br>
+      <input type="checkbox" id="input-admin" name="adminStatus">
+      <label for="adminStatus">Is Admin</label>
+    </form>
+
+    <button id="submit-data">Submit</button>
+
+    <button id="empty-table"> Empty Table </button>
+
   </main>
 
 </body>
