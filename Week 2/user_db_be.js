@@ -5,27 +5,59 @@ function submitData() {
   const userNameInput = document.getElementById("input-username");
   const userEmailInput = document.getElementById("input-email");
   const adminSelector = document.getElementById("input-admin");
+  const imageInput = document.getElementById("input-image")
   const tableBody = document.querySelector("tbody");
 
   submitButton.addEventListener("click", function() {
 
-    let newRow = document.createElement("tr");
-    let userName = document.createElement("td");
-    let userEmail = document.createElement("td");
-    let isAdmin = document.createElement("td");
-    
-    userName.innerText = userNameInput.value;
-    userEmail.innerText = userEmailInput.value;
-    if (adminSelector.checked) {
-      isAdmin.innerText = "X";
-    } else {
-      isAdmin.innerText = "-";
+    const rows = tableBody.querySelectorAll("tr");
+    const rowsArray = Array.from(rows);
+    const file = imageInput.files[0];
+
+    let adminSelectorChar = "";
+    let imageSrc = "";
+
+    if (file) {
+      imageSrc = URL.createObjectURL(file);
     }
 
-    newRow.appendChild(userName);
-    newRow.appendChild(userEmail);
-    newRow.appendChild(isAdmin);
-    tableBody.appendChild(newRow);
+    let userImageCell = document.createElement("td");
+    let imageElement = document.createElement("img");
+
+    imageElement.src = imageSrc;
+    imageElement.width = 64;
+    imageElement.height = 64;
+    userImageCell.appendChild(imageElement);
+
+    if (adminSelector.checked) {
+        adminSelectorChar = "X";
+    } else {
+        adminSelectorChar = "-";
+    }
+
+    let existingRow = rowsArray.find(row => {
+      return row.cells[0].innerText == userNameInput.value;
+    });
+
+    if (existingRow) {
+      existingRow.cells[1].innerText = userEmailInput.value;
+      existingRow.cells[2].innerText = adminSelectorChar;
+      existingRow.cells[3].innerHTML = "";
+      existingRow.cells[3].appendChild(imageElement);
+    } else {
+      let newRow = document.createElement("tr");
+      let userName = document.createElement("td");
+      let userEmail = document.createElement("td");
+      let isAdmin = document.createElement("td");
+      userName.innerText = userNameInput.value;
+      userEmail.innerText = userEmailInput.value;
+      isAdmin.innerText = adminSelectorChar;
+      newRow.appendChild(userName);
+      newRow.appendChild(userEmail);
+      newRow.appendChild(isAdmin);
+      newRow.appendChild(userImageCell);
+      tableBody.appendChild(newRow);
+    }
 
   })
 

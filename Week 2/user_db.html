@@ -15,12 +15,12 @@
   <main>
     <table>
       <thead>
-        <tr><th>Username</th><th>Email</th><th>Admin</th></tr>
+        <tr><th>Username</th><th>Email</th><th>Admin</th><th>Image</th></tr>
       </thead>
       <tbody>
-        <tr><td>Webmaster</td><td>webmaster@gmail.com</td><td>X</td></tr>
-        <tr><td>User123</td><td>user123@hotmail.com</td><td>-</td></tr>
-        <tr><td>hotPotato67</td><td>hotPotato67@yahoo.com</td><td>-</td></tr>
+        <tr><td>Webmaster</td><td>webmaster@gmail.com</td><td>X</td><td><img src="Jesse2" alt="" width="64" height="64"></td></tr>
+        <tr><td>User123</td><td>user123@hotmail.com</td><td>-</td><td><img src="Walter.webp" alt="" width="64" height="64"></td></tr>
+        <tr><td>hotPotato67</td><td>hotPotato67@yahoo.com</td><td>-</td><td><img src="Jesse1.png" alt="" width="64" height="64"></td></tr>
       </tbody>
     </table>
 
@@ -31,6 +31,8 @@
       <input type="text" id="input-email" name="userEmail"><br>
       <input type="checkbox" id="input-admin" name="adminStatus">
       <label for="adminStatus">Is Admin</label>
+      <label for="inputImage"> Image: </label><br>
+      <input type="file" id="input-image" name="inputImage"><br>
     </form>
 
     <button id="submit-data">Submit</button>
