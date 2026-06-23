@@ -2,9 +2,9 @@ const popEmpTable = document.getElementById("pop_emp_table");
 const popEmpTableHead = document.getElementById("pop_emp_table_head");
 const popEmpTableBody = document.getElementById("pop_emp_table_body");
 
-async function loadPopulationData () {
+async function getPopulation () {
 
-  const popDataUrl = "https://pxdata.stat.fi/PxWeb/api/v1/fi/StatFin/11ra.px";
+  const popDataUrl = "https://pxdata.stat.fi/PxWeb/api/v1/fi/StatFin/vaerak/11ra.px";
   const queryBody = {
     "query": [
     {
@@ -996,7 +996,7 @@ async function loadEmploymentData () {
 async function loadDataIntoTable () {
 
   const [populationData, employmentData] = await Promise.all([
-    loadPopulationData(),
+    getPopulation(),
     loadEmploymentData()
   ]);
 
