@@ -1,0 +1,27 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#place {
+  text-align: center;
+}
+
+#weather-reports {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.temp-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wind-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
