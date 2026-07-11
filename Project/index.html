@@ -12,11 +12,19 @@
   <main>
 
     <div class="search-bar">
-      <input type="text" placeholder="City">
-      <button id="city-search-button">Search</button>
-      <button id="current-location-button">Use Current Location</button>
+      <div id="search-row">
+        <input type="text" placeholder="City">
+        <button id="city-search-button">Search</button>
+      </div>
+      <div id="buttons-row">
+        <button id="current-location-button">Use Current Location</button>
+        <button id="add-favorite-button">☆ Add to Favorites</button>
+        <select id="favorites-menu">
+          <option value="">My Favorites</option>
+        </select>
+      </div>
     </div>
-    
+
     <h1 id="place"></h1>
 
     <div id="weather-reports"></div>

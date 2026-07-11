@@ -1,4 +1,8 @@
+let currentLat = null;
+let currentLon = null;
+let currentCity = null;
 
+let favorites = [];
 
 document.getElementById('current-location-button').addEventListener('click', () => {
   document.getElementById('weather-reports').innerHTML = '';
@@ -13,6 +17,8 @@ document.getElementById('current-location-button').addEventListener('click', () 
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
       //console.log(lat, lon);
+      currentLat = lat;
+      currentLon = lon;
       getCityName(lat,lon);
       getMeteoWeather(lat,lon)
       getOpenWeatherMapWeather(lat,lon);
@@ -32,6 +38,10 @@ document.getElementById('city-search-button').addEventListener('click', async ()
   const lat = data[0].lat;
   const lon = data[0].lon;
 
+  currentLat = lat;
+  currentLon = lon;
+  currentCity = city;
+
   document.getElementById('weather-reports').innerHTML = '';
   document.getElementById('place').innerText = "The Weather In " + city;
 
@@ -44,6 +54,7 @@ async function getCityName(thisLat, thisLon) {
   const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${thisLat}&lon=${thisLon}&format=json`);
   const data = await response.json();
   document.getElementById('place').innerText = "The Weather In " + data.address.city;
+  currentCity = data.address.city;
 }
 
 async function getMeteoWeather(thisLat, thisLon) {
@@ -235,6 +246,9 @@ async function getWeatherApiWeather(thisLat, thisLon) {
   weatherApiDiv.appendChild(tempRow);
   weatherApiDiv.appendChild(windRow);
   document.getElementById('weather-reports').appendChild(weatherApiDiv);
+
+  updateBackground(temp, time); // Used here because this gives the current time's weather
+
 };
 
 
@@ -260,3 +274,53 @@ function changeWindUnit(windSpeedPara, unit) {
     windSpeedPara.innerHTML = `Wind Speed: ${mph.toFixed(1)} mph`;
   }
 }
+
+function updateBackground(temp, time) {
+  const hour = parseInt(time.slice(11, 13));
+  document.body.classList.remove('night-background', 'cold-day-background', 'hot-day-background');
+
+  if (hour >=  20 || hour < 6) {
+    document.body.classList.add('night-background');
+    
+  } else if (temp < 15) {
+    document.body.classList.add('cold-day-background');
+  } else if (temp > 15) {
+    document.body.classList.add('hot-day-background');
+  }
+}
+
+
+
+document.getElementById("add-favorite-button").addEventListener('click', () => {
+  if (!currentLat || !currentLon) {
+    alert("Search a location first");
+    return;
+  }
+
+  favorites.push({name: currentCity, lat: currentLat, lon: currentLon});
+  renderFavoritesMenu();
+});
+
+function renderFavoritesMenu() {
+  const menu = document.getElementById("favorites-menu");
+  menu.innerHTML = '<option value="">My Favorites</option>';
+  for (let i = 0; i < favorites.length; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = favorites[i].name;
+    menu.appendChild(option);
+  };
+};
+
+document.getElementById("favorites-menu").addEventListener('change', (e) => {
+  const selected = favorites[e.target.value];
+  if (!selected) return;
+
+  document.getElementById('weather-reports').innerHTML = '';
+  document.getElementById('place').innerText = "The Weather In " + selected.name;
+
+  getMeteoWeather(selected.lat, selected.lon);
+  getOpenWeatherMapWeather(selected.lat, selected.lon);
+  getWeatherApiWeather(selected.lat, selected.lon);
+});
+

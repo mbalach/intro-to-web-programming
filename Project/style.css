@@ -1,7 +1,14 @@
 .search-bar {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+#search-row, #buttons-row {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -24,4 +31,37 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+@media (max-width: 600px) {
+  #weather-reports {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-size: 100% 100%;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+}
+
+.night-background {
+  background-image: url('pics/night-picture.jpg');
+  color: antiquewhite;
+}
+
+.cold-day-background {
+  background-image: url('pics/cold-day-picture.jpg');
+}
+
+.hot-day-background {
+  background-image: url('pics/hot-day-picture.jpg');
+  color: darkblue;
 }
