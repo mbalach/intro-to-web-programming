@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="project.js" defer></script>
   <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/frappe-charts@1.6.2/dist/frappe-charts.min.umd.js"></script>
   <title>Weather application</title>
 </head>
 <body>
@@ -28,6 +29,13 @@
     <h1 id="place"></h1>
 
     <div id="weather-reports"></div>
+
+    <div id="chart"></div>
+
+    <div id="chart-toggle">
+      <button id="show-24h-button">24 Hours</button>
+      <button id="show-7day-button">7 Days</button>
+    </div>
 
   </main>
 

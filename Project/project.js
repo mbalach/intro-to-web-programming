@@ -25,6 +25,7 @@ document.getElementById('current-location-button').addEventListener('click', () 
       getMeteoWeather(lat,lon)
       getOpenWeatherMapWeather(lat,lon);
       getWeatherApiWeather(lat, lon);
+      drawCamparisonChart(lat, lon);
     },
     (error) => {
       alert('Unable to retrieve your location');
@@ -51,6 +52,8 @@ document.getElementById('city-search-button').addEventListener('click', async ()
   getMeteoWeather(lat, lon);
   getOpenWeatherMapWeather(lat, lon);
   getWeatherApiWeather(lat, lon);
+
+  drawCamparisonChart(lat, lon);
 });
 
 // Used to get the name of the city using the coordinates retrieved when user clicks current-location-button
@@ -65,15 +68,18 @@ async function getCityName(thisLat, thisLon) {
 async function getMeteoWeather(thisLat, thisLon) {
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${thisLat}&longitude=${thisLon}&current_weather=true`);
   const data = await response.json();
-  //console.log(data.current_weather);
+  console.log(data.current_weather);
   const time = data.current_weather.time;
   const temp = data.current_weather.temperature;
   const windSpeed = data.current_weather.windspeed;
+  const weatherCode = data.current_weather.weathercode;
   
   const openMeteoDiv = document.createElement("div");
   const timePara = document.createElement("p");
   const tempPara = document.createElement("p");
   const windSpeedPara = document.createElement("p");
+  const iconPara = document.createElement("p");
+  iconPara.className = "weather-emoji";
   const openMeteoHeading = document.createElement("h2");
   const tempUnitSelect = document.createElement("select");
   const tempRow = document.createElement("div");
@@ -113,6 +119,7 @@ async function getMeteoWeather(thisLat, thisLon) {
   windRow.className = "wind-row";
   windSpeedPara.innerHTML = `Wind Speed: ${windSpeed}`;
   openMeteoHeading.innerText = "Open Meteo Weather Report";
+  iconPara.innerText = getOpenMeteoWeatherIcon(weatherCode);
 
   tempRow.appendChild(tempPara);
   tempRow.appendChild(tempUnitSelect);
@@ -123,6 +130,7 @@ async function getMeteoWeather(thisLat, thisLon) {
   openMeteoDiv.appendChild(timePara);
   openMeteoDiv.appendChild(tempRow);
   openMeteoDiv.appendChild(windRow);
+  openMeteoDiv.appendChild(iconPara);
   //document.body.appendChild(openMeteoDiv);
   document.getElementById('weather-reports').appendChild(openMeteoDiv);
 
@@ -138,11 +146,14 @@ async function getOpenWeatherMapWeather(thisLat, thisLon) {
   const time = date.toISOString().slice(0, 16);
   const temp = data.main.temp;
   const windSpeed = data.wind.speed * 3.6;
+  const iconCode = data.weather[0].icon;
 
   const owmDiv = document.createElement("div");
   const timePara = document.createElement("p");
   const tempPara = document.createElement("p");
   const windSpeedPara = document.createElement("p");
+  const iconImg = document.createElement("img");
+  iconImg.className = "weather-icon";
   const owmHeading = document.createElement("h2");
   const tempUnitSelect = document.createElement("select");
   const tempRow = document.createElement("div");
@@ -174,6 +185,8 @@ async function getOpenWeatherMapWeather(thisLat, thisLon) {
     changeWindUnit(windSpeedPara, windUnitSelect.value);
   });
 
+  iconImg.src = `https://openweathermap.org/img/wn/${iconCode}@2x.png`;
+
   timePara.innerHTML = `Time: ${time}`;
   tempPara.innerHTML = `Temperature: ${temp}°C`;
   tempRow.className = "temp-row";
@@ -190,6 +203,7 @@ async function getOpenWeatherMapWeather(thisLat, thisLon) {
   owmDiv.appendChild(timePara);
   owmDiv.appendChild(tempRow);
   owmDiv.appendChild(windRow);
+  owmDiv.appendChild(iconImg);
   //document.body.appendChild(owmDiv);
   document.getElementById('weather-reports').appendChild(owmDiv);
 
@@ -204,16 +218,21 @@ async function getWeatherApiWeather(thisLat, thisLon) {
   const time = data.current.last_updated;
   const temp = data.current.temp_c;
   const windSpeed = data.current.wind_kph;
+  const iconUrl = data.current.condition.icon;
 
   const weatherApiDiv = document.createElement("div");
   const timePara = document.createElement("p");
   const tempPara = document.createElement("p");
   const windSpeedPara = document.createElement("p");
+  const iconImg = document.createElement("img");
+  iconImg.className = "weather-icon";
   const weatherApiHeading = document.createElement("h2");
   const tempUnitSelect = document.createElement("select");
   const tempRow = document.createElement("div");
   const windUnitSelect = document.createElement("select");
   const windRow = document.createElement("div");
+
+  iconImg.src = 'https:' + iconUrl;
 
   tempUnitSelect.innerHTML = `
     <option value="C">°C</option>
@@ -254,6 +273,7 @@ async function getWeatherApiWeather(thisLat, thisLon) {
   weatherApiDiv.appendChild(timePara);
   weatherApiDiv.appendChild(tempRow);
   weatherApiDiv.appendChild(windRow);
+  weatherApiDiv.appendChild(iconImg);
   document.getElementById('weather-reports').appendChild(weatherApiDiv);
 
   updateBackground(temp, time); // Used here because this gives the current time's weather
@@ -337,3 +357,128 @@ document.getElementById("favorites-menu").addEventListener('change', (e) => {
   getWeatherApiWeather(selected.lat, selected.lon);
 });
 
+// Gets the hourly tempreture readings from open Weather Api
+
+async function getOwmHourlyReadings (thisLat, thisLon) {
+  const openWeatherMapApiKey = '9f6d9206da4944650ef3e092424069ab'; // I had to get the api key to use this api. I couldn't find the validity period of the api key, so please contact me if some error occurs :)
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${thisLat}&lon=${thisLon}&appid=${openWeatherMapApiKey}&units=metric`);
+  const data = await response.json();
+  //console.log(data);
+
+  const owmTimes = [];
+  const owmTemps = [];
+
+  for (let i = 0; i < 8; i++) {
+    const entry = data.list[i];
+    owmTimes.push(entry.dt_txt.slice(11, 16));
+    owmTemps.push(entry.main.temp);
+  };
+
+  return {owmTimes, owmTemps};
+}
+
+async function drawCamparisonChart(thisLat, thisLon) {
+  const meteoResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${thisLat}&longitude=${thisLon}&hourly=temperature_2m`);
+  const meteoData = await meteoResponse.json();
+  //console.log(meteoData);
+
+  const now = new Date();
+  let startIndex = 0;
+
+  for (let i = 0; i < meteoData.hourly.time.length; i++) {
+    const hourTime = new Date(meteoData.hourly.time[i]);
+    if (hourTime >= now) {
+      startIndex = i;
+      break;
+    };
+  };
+
+  const meteoLabels = [];
+  const meteoTemps = [];
+
+  for (let i = startIndex; i < startIndex + 24; i++) {
+    meteoLabels.push(meteoData.hourly.time[i].slice(11,16));
+    meteoTemps.push(meteoData.hourly.temperature_2m[i]);
+  }
+
+  const owm = await getOwmHourlyReadings(thisLat, thisLon);
+
+  document.getElementById("chart").innerHTML = '';
+
+  new frappe.Chart("#chart", {
+    title: "24 Hour Temperature Comparison",
+    data: {
+      labels: meteoLabels,
+      datasets: [
+        {name: "Open-Meteo", values: meteoTemps},
+        {name: "OpenWeatherMap", values: owm.owmTemps}
+      ]
+    },
+    type: 'line',
+    height: 300,
+    colors: ['blue', 'red']
+  });
+}
+
+function getOpenMeteoWeatherIcon(iconCode) {
+  if (iconCode === 0) return "☀️";
+  if (iconCode >= 1 && iconCode <= 3) return "⛅";
+  if (iconCode >= 45 && iconCode <= 48) return "🌫️";
+  if (iconCode >= 51 && iconCode <= 67) return "🌧️";
+  if (iconCode >= 71 && iconCode <= 77) return "❄️";
+  if (iconCode >= 80 && iconCode <= 82) return "🌦️";
+  if (iconCode >= 95) return "⛈️";
+  return "🌡️";
+};
+
+async function getMeteo7DayForecast(thisLat, thisLon) {
+  const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${thisLat}&longitude=${thisLon}&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+  const data = await response.json();
+  //console.log(data);
+
+  const labels = data.daily.time;
+  const maxTemps = data.daily.temperature_2m_max;
+  const minTemps = data.daily.temperature_2m_min;
+
+  return {labels, maxTemps, minTemps};
+};
+
+async function getOwm7DayForecast(thisLat, thisLon) {
+  const openWeatherMapApiKey = '9f6d9206da4944650ef3e092424069ab';
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${thisLat}&lon=${thisLon}&appid=${openWeatherMapApiKey}&units=metric`);
+  const data = await response.json();
+  //console.log(data);
+
+  const dailyTemps = [];
+  for (let i = 0; i < data.list.length; i += 8) {
+    dailyTemps.push(data.list[i].main.temp);
+  }
+
+  console.log(dailyTemps); // It only gives 5 days of forecast so in the graph after 5 days there's a line. 
+  return dailyTemps;
+}
+
+document.getElementById('show-24h-button').addEventListener('click', () => {
+  drawCamparisonChart(currentLat, currentLon);
+});
+
+document.getElementById('show-7day-button').addEventListener('click', async () => {
+  const meteo7Day = await getMeteo7DayForecast(currentLat, currentLon);
+  const owm7Day = await getOwm7DayForecast(currentLat, currentLon);
+
+  document.getElementById("chart").innerHTML = '';
+
+  new frappe.Chart("#chart", {
+    title: "7 Day Temperature Comparison",
+    data: {
+      labels: meteo7Day.labels,
+      datasets: [
+        { name: "Open-Meteo (Max)", values: meteo7Day.maxTemps },
+        { name: "OpenWeatherMap", values: owm7Day }
+      ]
+    },
+    type: 'line',
+    height: 300,
+    colors: ['blue', 'red']
+  });
+});

@@ -12,6 +12,20 @@
   gap: 8px;
 }
 
+.weather-emoji {
+  font-size: 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.weather-icon {
+  width: 60px;
+  height: 60px;
+}
+
 #place {
   text-align: center;
 }
@@ -19,6 +33,21 @@
 #weather-reports {
   display: flex;
   justify-content: space-evenly;
+}
+
+#chart text {
+  fill: black;
+}
+
+#chart-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.night-background #chart text {
+  fill: white;
 }
 
 .temp-row {
