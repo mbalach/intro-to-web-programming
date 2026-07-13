@@ -377,6 +377,7 @@ async function getOwmHourlyReadings (thisLat, thisLon) {
   return {owmTimes, owmTemps};
 }
 
+// Draws a chart with 2 lines (2 different data sources)
 async function drawCamparisonChart(thisLat, thisLon) {
   const meteoResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${thisLat}&longitude=${thisLon}&hourly=temperature_2m`);
   const meteoData = await meteoResponse.json();
@@ -420,6 +421,7 @@ async function drawCamparisonChart(thisLat, thisLon) {
   });
 }
 
+// Get's the specific icon for the specific weather code.
 function getOpenMeteoWeatherIcon(iconCode) {
   if (iconCode === 0) return "☀️";
   if (iconCode >= 1 && iconCode <= 3) return "⛅";
@@ -431,6 +433,7 @@ function getOpenMeteoWeatherIcon(iconCode) {
   return "🌡️";
 };
 
+// Get's 7 day tempreture readings using Meteo Api
 async function getMeteo7DayForecast(thisLat, thisLon) {
   const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${thisLat}&longitude=${thisLon}&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
   const data = await response.json();
@@ -443,6 +446,7 @@ async function getMeteo7DayForecast(thisLat, thisLon) {
   return {labels, maxTemps, minTemps};
 };
 
+// Get's 7 day tempreture readings using Open weather map Api
 async function getOwm7DayForecast(thisLat, thisLon) {
   const openWeatherMapApiKey = '9f6d9206da4944650ef3e092424069ab';
   const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${thisLat}&lon=${thisLon}&appid=${openWeatherMapApiKey}&units=metric`);
@@ -458,10 +462,12 @@ async function getOwm7DayForecast(thisLat, thisLon) {
   return dailyTemps;
 }
 
+// By default 24 hours of forecast is shown but this is used when the user wants to switch from 7 day forecast graph
 document.getElementById('show-24h-button').addEventListener('click', () => {
   drawCamparisonChart(currentLat, currentLon);
 });
 
+// shows the 7 day forecast 
 document.getElementById('show-7day-button').addEventListener('click', async () => {
   const meteo7Day = await getMeteo7DayForecast(currentLat, currentLon);
   const owm7Day = await getOwm7DayForecast(currentLat, currentLon);
