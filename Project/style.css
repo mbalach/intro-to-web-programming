@@ -50,6 +50,21 @@
   fill: white;
 }
 
+button {
+  border-radius: 100px;
+  border: solid;
+  border-color: rgb(177, 177, 177);
+  background-color: beige;
+  border-width: 1px;
+}
+
+#favorites-menu {
+  background-color: beige;
+  border: solid;
+  border-color: rgb(177, 177, 177);
+  border-width: 1px;
+}
+
 .temp-row {
   display: flex;
   align-items: center;
